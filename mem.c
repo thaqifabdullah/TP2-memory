@@ -60,8 +60,8 @@ void* mem_alloc(size_t taille){
 			}
 		}
 		resultat = (size_t *)fb_dispo;
-		*resultat = taille;
-		resultat++;
+		*resultat = taille; //mettre la taille donnée à l'utilisateur
+		resultat++;  		//decaler 8 octet et puis lui donner le debut de la mémoire allouée
 		return resultat;
 	}else
 		return NULL; 
@@ -77,7 +77,7 @@ void mem_free(void* zone){
 	fin_zone_libre = (char *)taille + sizeof(size_t) +*taille;
 	
 	//trier la liste chainee
-	if(zone_libre<tete_fb){
+	if(zone_libre<tete_fb){ //zone_libre devient la tête de liste fb
 		if(fin_zone_libre == (char *)tete_fb){
 			zone_libre->size = *taille + sizeof(size_t) + tete_fb->size;
 			zone_libre->next = tete_fb->next;
@@ -87,16 +87,17 @@ void mem_free(void* zone){
 			zone_libre->next = tete_fb;
 			tete_fb = zone_libre;
 		}
-	}else{
+	}else{ //trouver la bonne place dans la liste fb
 		zone_libre_next = tete_fb;
-		while(zone_libre_next<zone_libre){
+		while(zone_libre_next != NULL && zone_libre_next<zone_libre){
 			zone_libre_next = zone_libre_next->next;
 		}
 		zone_libre_prec = tete_fb;
-		while(zone_libre_prec->next != zone_libre_next){
+		while(zone_libre_prec != NULL && zone_libre_prec->next != zone_libre_next){
 			zone_libre_prec = zone_libre_prec->next;
 		}
 
+		//Tester si on peut faire une diffusion entre zone_libre et zone_libre->next
 		if(fin_zone_libre == (char *)zone_libre_next){
 			zone_libre->size = *taille + sizeof(size_t) + zone_libre_next->size;
 			zone_libre->next = zone_libre_next->next;
@@ -105,6 +106,7 @@ void mem_free(void* zone){
 			zone_libre->next = zone_libre_next;
 		}
 
+		//Tester si on peut faire une diffusion entre zone_libre et zone_libre->prec
 		fin_zone_libre_prec = (char *)zone_libre_prec;
 		fin_zone_libre_prec+=zone_libre_prec->size;
 		if(fin_zone_libre_prec == (char *)zone_libre){
