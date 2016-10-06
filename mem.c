@@ -48,7 +48,7 @@ void* mem_alloc(size_t taille){
 				nouv_fb->next = fb_dispo->next;
 			}
 		}else{
-			taille = taille + nouv_fb_taille; //pas de nouvelle free block
+			taille = taille + nouv_fb_taille; //pas de nouveau free block
 			if(fb_dispo == tete_fb){
 				tete_fb = tete_fb->next;
 			}else{
@@ -128,6 +128,7 @@ void mem_show(void (*print)(void *, size_t, int free)){
 	char  *offset = (char *)get_memory_adr();
 	struct fb *zone_libre = tete_fb;
 	size_t *zone_occupee;
+	//parcourir l'ensemble de blocs
 	while(offset < (char *)get_memory_adr()+get_memory_size()){
 		if(offset != (char *)zone_libre){
 			zone_occupee = (size_t *)offset+1;
